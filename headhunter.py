@@ -1,53 +1,74 @@
-import statistics
 import requests
+import statistics
+
 from itertools import count
-from functions import count_statistics
+from terminaltables import DoubleTable
+from functions import calculate_salary, make_clear
 
 
 def process_salaries(clear_salary_stats):
     average_salaries = []
     for salary in clear_salary_stats:
-        currency = salary['currency']
-        first_border = salary['from']
-        second_border = salary['to']
-        if currency == 'RUR' and first_border and second_border:
-            average_salary = statistics.mean([int(first_border),
-                                              int(second_border)])
-            average_salaries.append(average_salary)
+        average_salary = count_average_salary(salary)
+        average_salaries.append(average_salary)
     return average_salaries
 
 
-def make_clear(list):
-    result = [x for x in list if x is not None]
-    return result
-
-
-def process_vacancies_hh(vacancies, language, salary_stats, language_count):
+def process_vacancies_hh(vacancies):
+    salary_stats = []
     for vacancy in vacancies:
-        if language in vacancy['name']:
-            language_count = language_count+1
-            salary_stats.append(vacancy['salary'])
+        salary_stats.append(vacancy['salary'])
     clear_salary_stats = make_clear(salary_stats)
     average_salaries = process_salaries(clear_salary_stats)
     clear_average_salaries = make_clear(average_salaries)
-    return clear_average_salaries, language_count
+    return clear_average_salaries
 
 
-def hh_searcher(date_from):
-    all_vacancies = []
+def search_vacancies_hh(date_from):
+    title = 'HeadHunter'
+    table_data = [['Language', 'Total', 'Processed', 'Salary']]
+    languages = ['JavaScript', 'Java',
+                 'Python', 'Ruby',
+                 'PHP', 'C++',
+                 'C#', 'C',
+                 'Go', 'Shell']
+    download_vacancies_hh(languages, date_from, table_data)
+    table_instance = DoubleTable(table_data, title)
+    print(table_instance.table)
+
+
+def count_average_salary(salary):
+    currency = salary['currency']
+    lower_limit = salary['from']
+    upper_limit = salary['to']
+    if currency == 'RUR':
+        average_salary = calculate_salary(lower_limit, upper_limit)
+        return average_salary
+
+
+def download_vacancies_hh(languages, date_from, table_data):
+    for language in languages:
+        language_vacancies = []
+        language_vacancies = paginate_hh(language, date_from, language_vacancies)
+        clear_average_salaries = process_vacancies_hh(language_vacancies)
+        average_salary = statistics.mean(clear_average_salaries)
+        table_data.append([language, len(language_vacancies),
+                           len(clear_average_salaries), int(average_salary)])
+
+
+def paginate_hh(language, date_from, language_vacancies):
+    moscow_city_code = 1
     for page in count(0):
         url = 'https://api.hh.ru/vacancies'
-        payload = {'text': 'программист',
-                   'area': 1,
+        payload = {'text': f'программист {language}',
+                   'area': moscow_city_code,
                    'date_from': date_from,
                    'page': page,
                    'per_page': 100}
         page_response = requests.get(url, params=payload)
         page_response.raise_for_status()
         page_items = page_response.json()['items']
-        all_vacancies.extend(page_items)
-        if page == 19:
+        language_vacancies.extend(page_items)
+        if page == 10:
             break
-    count_statistics(all_vacancies,
-                     processor=process_vacancies_hh,
-                     title='HeadHunter')
+    return language_vacancies

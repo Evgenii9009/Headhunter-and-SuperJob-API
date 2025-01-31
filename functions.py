@@ -1,28 +1,4 @@
 import statistics
-from terminaltables import DoubleTable
-
-
-def count_statistics(vacancies, **kwargs):
-    processor = kwargs['processor']
-    languages = ['JavaScript', 'Java',
-                 'Python', 'Ruby',
-                 'PHP', 'C++',
-                 'C#', 'C',
-                 'Go', 'Shell']
-    title = kwargs['title']
-    table_data = [['Language', 'Total', 'Processed', 'Salary']]
-    global_stats = dict()
-    for language in languages:
-        language_count = 0
-        salary_stats = []
-        salary_stats, language_count = processor(vacancies, language,
-                                                 salary_stats, language_count)
-        average_salary = count_average_salary(salary_stats)
-        table_data.append([language, language_count,
-                           len(salary_stats), average_salary])
-    table_instance = DoubleTable(table_data, title)
-    print(table_instance.table)
-    return global_stats
 
 
 def count_average_salary(salary_stats):
@@ -31,3 +7,32 @@ def count_average_salary(salary_stats):
     else:
         counted_average_salary = None
     return counted_average_salary
+
+
+def process_language(language, vacancies, table_data, processor):
+    salary_stats = []
+    language_count = len(language)
+    salary_stats, language_count = processor(vacancies, language,
+                                             salary_stats, language_count)
+    average_salary = count_average_salary(salary_stats)
+    table_data.append([language, language_count,
+                       len(salary_stats), average_salary])
+    return table_data
+
+
+def calculate_salary(lower_limit, upper_limit):
+    if lower_limit and upper_limit:
+        average_salary = statistics.mean([int(lower_limit),
+                                          int(upper_limit)])
+    elif lower_limit and not upper_limit:
+        average_salary = int(lower_limit)*1.2
+    elif upper_limit and not lower_limit:
+        average_salary = int(upper_limit)*0.8
+    elif not lower_limit and not upper_limit:
+        average_salary = None
+    return average_salary
+
+
+def make_clear(list):
+    result = [x for x in list if x is not None]
+    return result

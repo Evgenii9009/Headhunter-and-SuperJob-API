@@ -21,10 +21,10 @@ def search_vacancies_hh(date_from):
                  'C#', 'C',
                  'Go', 'Shell']
     for language in languages:
-        language_vacancies = paginate_hh(language, date_from)
+        language_vacancies, vacancies_number = paginate_hh(language, date_from)
         clear_average_salaries = process_vacancies_hh(language_vacancies)
         average_salary = statistics.mean(clear_average_salaries)
-        table_data.append([language, len(language_vacancies),
+        table_data.append([language, vacancies_number,
                            len(clear_average_salaries), int(average_salary)])
     table_instance = DoubleTable(table_data, title)
     print(table_instance.table)
@@ -54,7 +54,8 @@ def paginate_hh(language, date_from):
         page_response.raise_for_status()
         page_payload = page_response.json()
         page_vacancies = page_payload['items']
+        vacancies_number = page_payload['found']
         language_vacancies.extend(page_vacancies)
         if page == page_payload['pages']-1:
             break
-    return language_vacancies
+    return language_vacancies, vacancies_number

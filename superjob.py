@@ -14,9 +14,9 @@ def process_vacancies_sj(vacancies):
             lower_limit = int(vacancy['payment_from'])
             upper_limit = int(vacancy['payment_to'])
             average_salary = calculate_salary(lower_limit, upper_limit)
-            salary_stats.append(average_salary)
-            clear_salary_stats = [x for x in salary_stats if x is not None]
-        return clear_salary_stats
+            if average_salary:
+                salary_stats.append(average_salary)
+        return salary_stats
 
 
 def search_vacancies_sj(date_from, secret_key):
@@ -34,7 +34,7 @@ def search_vacancies_sj(date_from, secret_key):
 
 def download_sj_vacancies(languages, secret_key, date_from, table_data):
     for language in languages:
-        language_vacancies = paginate_sj(language, date_from, secret_key)
+        language_vacancies, vacancies_number = paginate_sj(language, date_from, secret_key)
         clear_average_salaries = process_vacancies_sj(language_vacancies)
         if clear_average_salaries:
             average_salary = int(statistics.mean(clear_average_salaries))
@@ -42,7 +42,7 @@ def download_sj_vacancies(languages, secret_key, date_from, table_data):
         else:
             average_salary = None
             number_processed = 0
-        table_data.append([language, len(language_vacancies),
+        table_data.append([language, vacancies_number,
                            number_processed, average_salary])
 
 
@@ -60,7 +60,8 @@ def paginate_sj(language, date_from, secret_key):
         page_response.raise_for_status()
         page_payload = page_response.json()
         page_vacancies = page_payload['objects']
+        vacancies_number = page_payload['total']
         language_vacancies.extend(page_vacancies)
         if page_payload['more'] is False:
             break
-    return language_vacancies
+    return language_vacancies, vacancies_number

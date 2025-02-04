@@ -3,24 +3,19 @@ import statistics
 
 from itertools import count
 from terminaltables import DoubleTable
-from functions import calculate_salary, make_clear
+from functions import calculate_salary
 
 
 def process_salaries(clear_salary_stats):
-    average_salaries = []
-    for salary in clear_salary_stats:
-        average_salary = count_average_salary(salary)
-        average_salaries.append(average_salary)
+    average_salaries = [count_average_salary(salary) for salary in clear_salary_stats]
     return average_salaries
 
 
 def process_vacancies_hh(vacancies):
-    salary_stats = []
-    for vacancy in vacancies:
-        salary_stats.append(vacancy['salary'])
-    clear_salary_stats = make_clear(salary_stats)
+    salary_stats = [vacancy['salary'] for vacancy in vacancies]
+    clear_salary_stats = [x for x in salary_stats if x is not None]
     average_salaries = process_salaries(clear_salary_stats)
-    clear_average_salaries = make_clear(average_salaries)
+    clear_average_salaries = [x for x in average_salaries if x is not None]
     return clear_average_salaries
 
 

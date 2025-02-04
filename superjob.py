@@ -3,7 +3,7 @@ import requests
 
 
 from itertools import count
-from functions import calculate_salary, make_clear
+from functions import calculate_salary
 from terminaltables import DoubleTable
 
 
@@ -15,7 +15,7 @@ def process_vacancies_sj(vacancies):
             upper_limit = int(vacancy['payment_to'])
             average_salary = calculate_salary(lower_limit, upper_limit)
             salary_stats.append(average_salary)
-            clear_salary_stats = make_clear(salary_stats)
+            clear_salary_stats = [x for x in salary_stats if x is not None]
         return clear_salary_stats
 
 
@@ -34,7 +34,6 @@ def search_vacancies_sj(date_from, secret_key):
 
 def download_sj_vacancies(languages, secret_key, date_from, table_data):
     for language in languages:
-        language_vacancies = []
         language_vacancies = paginate_sj(language, date_from, secret_key)
         clear_average_salaries = process_vacancies_sj(language_vacancies)
         if clear_average_salaries:

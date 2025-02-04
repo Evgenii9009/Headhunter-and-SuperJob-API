@@ -35,7 +35,7 @@ def search_vacancies_sj(date_from, secret_key):
 def download_sj_vacancies(languages, secret_key, date_from, table_data):
     for language in languages:
         language_vacancies = []
-        language_vacancies = paginate_sj(language, date_from, language_vacancies, secret_key)
+        language_vacancies = paginate_sj(language, date_from, secret_key)
         clear_average_salaries = process_vacancies_sj(language_vacancies)
         if clear_average_salaries:
             average_salary = int(statistics.mean(clear_average_salaries))
@@ -47,7 +47,8 @@ def download_sj_vacancies(languages, secret_key, date_from, table_data):
                            number_processed, average_salary])
 
 
-def paginate_sj(language, date_from, language_vacancies, secret_key):
+def paginate_sj(language, date_from, secret_key):
+    language_vacancies = []
     for page in count(0):
         url = "https://api.superjob.ru/2.0/vacancies/"
         headers = {'X-Api-App-Id': secret_key}

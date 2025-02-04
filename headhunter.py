@@ -48,17 +48,17 @@ def count_average_salary(salary):
 
 def download_vacancies_hh(languages, date_from, table_data):
     for language in languages:
-        language_vacancies = []
-        language_vacancies = paginate_hh(language, date_from, language_vacancies)
+        language_vacancies = paginate_hh(language, date_from)
         clear_average_salaries = process_vacancies_hh(language_vacancies)
         average_salary = statistics.mean(clear_average_salaries)
         table_data.append([language, len(language_vacancies),
                            len(clear_average_salaries), int(average_salary)])
 
 
-def paginate_hh(language, date_from, language_vacancies):
+def paginate_hh(language, date_from):
     moscow_city_code = 1
     vacancies_per_page = 100
+    language_vacancies = []
     for page in count(0):
         url = 'https://api.hh.ru/vacancies'
         payload = {'text': f'программист {language}',

@@ -6,17 +6,10 @@ from terminaltables import DoubleTable
 from functions import calculate_salary
 
 
-def process_salaries(clear_salary_stats):
-    average_salaries = [count_average_salary(salary) for salary in clear_salary_stats]
-    return average_salaries
-
-
 def process_vacancies_hh(vacancies):
-    salary_stats = [vacancy['salary'] for vacancy in vacancies]
-    clear_salary_stats = [x for x in salary_stats if x is not None]
-    average_salaries = process_salaries(clear_salary_stats)
-    clear_average_salaries = [x for x in average_salaries if x is not None]
-    return clear_average_salaries
+    salary_stats = [vacancy['salary'] for vacancy in vacancies if vacancy['salary'] is not None]
+    average_salaries = [count_average_salary(salary) for salary in salary_stats if count_average_salary(salary) is not None]
+    return average_salaries
 
 
 def search_vacancies_hh(date_from):
@@ -27,7 +20,12 @@ def search_vacancies_hh(date_from):
                  'PHP', 'C++',
                  'C#', 'C',
                  'Go', 'Shell']
-    download_vacancies_hh(languages, date_from, table_data)
+    for language in languages:
+        language_vacancies = paginate_hh(language, date_from)
+        clear_average_salaries = process_vacancies_hh(language_vacancies)
+        average_salary = statistics.mean(clear_average_salaries)
+        table_data.append([language, len(language_vacancies),
+                           len(clear_average_salaries), int(average_salary)])
     table_instance = DoubleTable(table_data, title)
     print(table_instance.table)
 
@@ -39,15 +37,6 @@ def count_average_salary(salary):
     if currency == 'RUR':
         average_salary = calculate_salary(lower_limit, upper_limit)
         return average_salary
-
-
-def download_vacancies_hh(languages, date_from, table_data):
-    for language in languages:
-        language_vacancies = paginate_hh(language, date_from)
-        clear_average_salaries = process_vacancies_hh(language_vacancies)
-        average_salary = statistics.mean(clear_average_salaries)
-        table_data.append([language, len(language_vacancies),
-                           len(clear_average_salaries), int(average_salary)])
 
 
 def paginate_hh(language, date_from):

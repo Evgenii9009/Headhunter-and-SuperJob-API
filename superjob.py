@@ -58,8 +58,9 @@ def paginate_sj(language, date_from, language_vacancies, secret_key):
                    'count': 100}
         page_response = requests.get(url, headers=headers, params=payload)
         page_response.raise_for_status()
-        page_objects = page_response.json()['objects']
-        language_vacancies.extend(page_objects)
-        if page == 4:
+        page_payload = page_response.json()
+        page_vacancies = page_payload['objects']
+        language_vacancies.extend(page_vacancies)
+        if page_payload['more'] is False:
             break
     return language_vacancies

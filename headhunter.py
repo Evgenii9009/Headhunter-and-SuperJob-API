@@ -58,17 +58,19 @@ def download_vacancies_hh(languages, date_from, table_data):
 
 def paginate_hh(language, date_from, language_vacancies):
     moscow_city_code = 1
+    vacancies_per_page = 100
     for page in count(0):
         url = 'https://api.hh.ru/vacancies'
         payload = {'text': f'программист {language}',
                    'area': moscow_city_code,
                    'date_from': date_from,
                    'page': page,
-                   'per_page': 100}
+                   'per_page': vacancies_per_page}
         page_response = requests.get(url, params=payload)
         page_response.raise_for_status()
-        page_items = page_response.json()['items']
-        language_vacancies.extend(page_items)
-        if page == 10:
+        page_payload = page_response.json()
+        page_vacancies = page_payload['items']
+        language_vacancies.extend(page_vacancies)
+        if page == page_payload['pages']-1:
             break
     return language_vacancies

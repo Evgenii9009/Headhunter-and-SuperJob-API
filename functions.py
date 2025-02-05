@@ -1,4 +1,5 @@
 import statistics
+from terminaltables import DoubleTable
 
 
 def calculate_salary(lower_limit, upper_limit):
@@ -12,3 +13,8 @@ def calculate_salary(lower_limit, upper_limit):
     elif not lower_limit and not upper_limit:
         average_salary = None
     return average_salary
+
+
+def create_table(table_data, title):
+    table_instance = DoubleTable(table_data, title)
+    print(table_instance.table)

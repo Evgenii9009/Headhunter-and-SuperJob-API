@@ -15,23 +15,12 @@ def process_vacancies_sj(vacancies):
             average_salary = calculate_salary(lower_limit, upper_limit)
             if average_salary:
                 salary_stats.append(average_salary)
-        return salary_stats
-
-
-def search_vacancies_sj(secret_key, date_from, languages):
-    table_data = [['Language', 'Total', 'Processed', 'Salary']]
-    for language in languages:
-        language_vacancies, vacancies_number = paginate_sj(language, date_from, secret_key)
-        clear_average_salaries = process_vacancies_sj(language_vacancies)
-        if clear_average_salaries:
-            average_salary = int(statistics.mean(clear_average_salaries))
-            number_processed = len(clear_average_salaries)
-        else:
-            average_salary = None
-            number_processed = 0
-        table_data.append([language, vacancies_number,
-                           number_processed, average_salary])
-    return table_data
+    if salary_stats:
+        salary = int(statistics.mean(salary_stats))
+        number_processed = len(salary_stats)
+    else:
+        salary, number_processed = None, None
+    return salary, number_processed
 
 
 def paginate_sj(language, date_from, secret_key):

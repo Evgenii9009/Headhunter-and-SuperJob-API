@@ -2,8 +2,8 @@ import datetime
 import os
 
 
-from headhunter import search_vacancies_hh
-from superjob import search_vacancies_sj
+from headhunter import paginate_hh, process_vacancies_hh
+from superjob import paginate_sj, process_vacancies_sj
 from functions import create_table
 
 
@@ -13,15 +13,25 @@ def main():
                  'PHP', 'C++',
                  'C#', 'C',
                  'Go', 'Shell']
+    table_data_hh = [['Language', 'Total', 'Processed', 'Salary']]
+    table_data_sj = [['Language', 'Total', 'Processed', 'Salary']]
     date_from = datetime.date.today() - datetime.timedelta(days=30)
     secret_key = os.getenv('SUPERJOB_SECRET_KEY')
-
-    table_data_hh = search_vacancies_hh(date_from, languages)
     title_hh = 'HeadHunter'
+    title_sj = 'SuperJob'
+
+    for language in languages:
+        vacancies, vacancies_number = paginate_hh(language, date_from)
+        salary, number_processed = process_vacancies_hh(vacancies)
+        table_data_hh.append([language, vacancies_number,
+                              number_processed, salary])
     create_table(table_data_hh, title_hh)
 
-    table_data_sj = search_vacancies_sj(secret_key, date_from, languages)
-    title_sj = 'SuperJob'
+    for language in languages:
+        vacancies, vacancies_number = paginate_sj(language, date_from, secret_key)
+        salary, number_processed = process_vacancies_sj(vacancies)
+        table_data_sj.append([language, vacancies_number,
+                              number_processed, salary])
     create_table(table_data_sj, title_sj)
 
 

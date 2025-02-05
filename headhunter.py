@@ -10,18 +10,9 @@ def process_vacancies_hh(vacancies):
     for vacancy in vacancies:
         if vacancy['salary'] and count_average_salary(vacancy['salary']):
             average_salaries.append(count_average_salary(vacancy['salary']))
-    return average_salaries
-
-
-def search_vacancies_hh(date_from, languages):
-    table_data = [['Language', 'Total', 'Processed', 'Salary']]
-    for language in languages:
-        language_vacancies, vacancies_number = paginate_hh(language, date_from)
-        clear_average_salaries = process_vacancies_hh(language_vacancies)
-        average_salary = statistics.mean(clear_average_salaries)
-        table_data.append([language, vacancies_number,
-                           len(clear_average_salaries), int(average_salary)])
-    return table_data
+    number_processed = len(average_salaries)
+    average_salary = int(statistics.mean(average_salaries))
+    return average_salary, number_processed
 
 
 def count_average_salary(salary):

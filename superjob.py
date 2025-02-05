@@ -4,7 +4,6 @@ import requests
 
 from itertools import count
 from functions import calculate_salary
-from terminaltables import DoubleTable
 
 
 def process_vacancies_sj(vacancies):
@@ -19,20 +18,8 @@ def process_vacancies_sj(vacancies):
         return salary_stats
 
 
-def search_vacancies_sj(date_from, secret_key):
-    title = 'Supejob'
+def search_vacancies_sj(secret_key, date_from, languages):
     table_data = [['Language', 'Total', 'Processed', 'Salary']]
-    languages = ['JavaScript', 'Java',
-                 'Python', 'Ruby',
-                 'PHP', 'C++',
-                 'C#', 'C',
-                 'Go', 'Shell']
-    download_sj_vacancies(languages, secret_key, date_from, table_data)
-    table_instance = DoubleTable(table_data, title)
-    print(table_instance.table)
-
-
-def download_sj_vacancies(languages, secret_key, date_from, table_data):
     for language in languages:
         language_vacancies, vacancies_number = paginate_sj(language, date_from, secret_key)
         clear_average_salaries = process_vacancies_sj(language_vacancies)
@@ -44,6 +31,7 @@ def download_sj_vacancies(languages, secret_key, date_from, table_data):
             number_processed = 0
         table_data.append([language, vacancies_number,
                            number_processed, average_salary])
+    return table_data
 
 
 def paginate_sj(language, date_from, secret_key):

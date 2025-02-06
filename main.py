@@ -2,8 +2,8 @@ import datetime
 import os
 
 
-from headhunter import paginate_hh, process_vacancies_hh
-from superjob import paginate_sj, process_vacancies_sj
+from headhunter import get_vacancies_hh, process_vacancies_hh
+from superjob import get_vacancies_sj, process_vacancies_sj
 from functions import create_table
 
 
@@ -21,14 +21,14 @@ def main():
     title_sj = 'SuperJob'
 
     for language in languages:
-        vacancies, vacancies_number = paginate_hh(language, date_from)
+        vacancies, vacancies_number = get_vacancies_hh(language, date_from)
         salary, number_processed = process_vacancies_hh(vacancies)
         table_data_hh.append([language, vacancies_number,
                               number_processed, salary])
     create_table(table_data_hh, title_hh)
 
     for language in languages:
-        vacancies, vacancies_number = paginate_sj(language, date_from, secret_key)
+        vacancies, vacancies_number = get_vacancies_sj(language, date_from, secret_key)
         salary, number_processed = process_vacancies_sj(vacancies)
         table_data_sj.append([language, vacancies_number,
                               number_processed, salary])

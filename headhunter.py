@@ -8,23 +8,24 @@ from functions import calculate_salary
 def process_vacancies_hh(vacancies):
     average_salaries = []
     for vacancy in vacancies:
-        if vacancy['salary'] and count_average_salary(vacancy['salary']):
-            average_salaries.append(count_average_salary(vacancy['salary']))
+        salary = count_average_salary(vacancy)
+        if not salary:
+            continue
+        average_salaries.append(salary)
     number_processed = len(average_salaries)
     average_salary = int(statistics.mean(average_salaries))
     return average_salary, number_processed
 
 
-def count_average_salary(salary):
-    currency = salary['currency']
-    lower_limit = salary['from']
-    upper_limit = salary['to']
-    if currency == 'RUR':
+def count_average_salary(vacancy):
+    if vacancy['salary'] and vacancy['salary']['currency'] == 'RUR':
+        lower_limit = vacancy['salary']['from']
+        upper_limit = vacancy['salary']['to']
         average_salary = calculate_salary(lower_limit, upper_limit)
         return average_salary
 
 
-def paginate_hh(language, date_from):
+def get_vacancies_hh(language, date_from):
     moscow_city_code = 1
     vacancies_per_page = 100
     language_vacancies = []

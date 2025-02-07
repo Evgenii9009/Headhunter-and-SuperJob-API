@@ -18,11 +18,12 @@ def process_vacancies_hh(vacancies):
 
 
 def count_average_salary(vacancy):
-    if vacancy['salary'] and vacancy['salary']['currency'] == 'RUR':
-        lower_limit = vacancy['salary']['from']
-        upper_limit = vacancy['salary']['to']
-        average_salary = calculate_salary(lower_limit, upper_limit)
-        return average_salary
+    if not vacancy['salary'] or not vacancy['salary']['currency'] == 'RUR':
+        pass
+    lower_limit = vacancy['salary']['from']
+    upper_limit = vacancy['salary']['to']
+    average_salary = calculate_salary(lower_limit, upper_limit)
+    return average_salary
 
 
 def get_vacancies_hh(language, date_from):

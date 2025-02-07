@@ -25,14 +25,13 @@ def main():
         salary, number_processed = process_vacancies_hh(vacancies)
         table_data_hh.append([language, vacancies_number,
                               number_processed, salary])
-    create_table(table_data_hh, title_hh)
+        #vacancies, vacancies_number = get_vacancies_sj(language, date_from, secret_key)
+        #salary, number_processed = process_vacancies_sj(vacancies)
+        #table_data_sj.append([language, vacancies_number,
+        #                      number_processed, salary])
 
-    for language in languages:
-        vacancies, vacancies_number = get_vacancies_sj(language, date_from, secret_key)
-        salary, number_processed = process_vacancies_sj(vacancies)
-        table_data_sj.append([language, vacancies_number,
-                              number_processed, salary])
-    create_table(table_data_sj, title_sj)
+    create_table(table_data_hh, title_hh)
+    #create_table(table_data_sj, title_sj)
 
 
 if __name__ == '__main__':
